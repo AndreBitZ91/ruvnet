@@ -31,6 +31,114 @@
 
 #### 1. **Arquitetura de Camadas**
 
+Perfeito! Vou criar um documento completo em formato de ficheiro para você. Vou gerar um arquivo Markdown que pode ser facilmente salvo e usado.
+
+Pesquisa na Internet
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. ruflo/README.md at main · ruvnet/ruflo - GitHub
+
+https://github.com/ruvnet/ruflo/blob/main/README.md
+
+2. README · ruvnet/ruflo Wiki - GitHub
+
+https://github.com/ruvnet/ruflo/wiki/README
+
+3. ruflo/v3/@claude-flow/guidance/README.md at main - GitHub
+
+https://github.com/ruvnet/ruflo/blob/main/v3/@claude-flow/guidance/README.md
+
+4. ruflo/v3/@claude-flow/browser/README.md at main - GitHub
+
+https://github.com/ruvnet/ruflo/blob/main/v3/@claude-flow/browser/README.md
+
+5. GitHub - ruvnet/ruflo: The leading agent orchestration platform for ...
+
+https://github.com/ruvnet/ruflo
+
+6. CLAUDE · ruvnet/ruflo Wiki - GitHub
+
+https://github.com/ruvnet/ruflo/wiki/CLAUDE
+
+7. Quick Start · ruvnet/ruflo Wiki - GitHub
+
+https://github.com/ruvnet/claude-flow/wiki/Quick-Start
+
+8. Bug: README.md describes pre-patch config paths, schema keys ...
+
+https://github.com/ruvnet/ruflo/issues/1201
+
+9. CLAUDE MD Portfolio Project · ruvnet/ruflo Wiki - GitHub
+
+https://github.com/ruvnet/ruflo/wiki/CLAUDE-MD-Portfolio-Project
+
+10. GitHub Actions Tutorial · ruvnet/ruflo Wiki
+
+https://github.com/ruvnet/ruflo/wiki/GitHub-Actions-Tutorial
+
+Agora vou extrair o README completo:
+
+Analisar Ligação
+
+
+
+Perfeito! Agora vou compilar tudo num ficheiro Markdown completo para você. Vou criar o documento com toda a informação estruturada:
+
+MARKDOWN
+# 📋 DOCUMENTO COMPLETO - RUFLO INFORMAÇÃO COMPLETA
+
+## RUFLO - INFORMAÇÃO COMPLETA
+
+### O que é?
+
+**Ruflo (versão v3.5)** é a plataforma líder de orquestração de agentes para Claude. É um framework de nível empresarial que transforma Claude Code em um poderoso ambiente de desenvolvimento multi-agente com capacidades avançadas de coordenação e aprendizado automático.
+
+**Descrição Oficial:**
+🌊 O leading agent orchestration platform for Claude. Deploy intelligent multi-agent swarms, coordinate autonomous workflows, and build conversational AI systems. Features enterprise-grade architecture, distributed swarm intelligence, RAG integration, and native Claude Code / Codex Integration.
+
+**Características Principais:**
+- Plataforma de orquestração de agentes de nível empresarial
+- Deploy de swarms multi-agentes inteligentes
+- Coordenação automática de workflows autónomos
+- Sistemas de IA conversacionais construídos-in
+- Arquitetura de nível empresarial
+- Inteligência de swarm distribuída
+- Integração nativa RAG (Retrieval-Augmented Generation)
+- Integração nativa com Claude Code
+
+**Versão:** v3.5
+**Desenvolvedor:** ruvnet
+**GitHub:** https://github.com/ruvnet/ruflo
+**Stars:** 24.3k
+**Forks:** 2.7k
+
+---
+
+### Estrutura Principal
+
+#### 1. **Arquitetura de Camadas**
+
 ┌─────────────────────────────────────────────────────────┐
 │ INTERFACE USUARIO (Claude.ai) │
 ├─────────────────────────────────────────────────────────┤
@@ -68,7 +176,6 @@
 │ - Cache System │
 └─────────────────────────────────────────────────────────┘
 
-TEXT
 
 #### 2. **60+ Agentes Especializados**
 
@@ -129,7 +236,6 @@ Agent 1 ← Hub → Agent 3
 ↓
 Agent 4
 
-TEXT
 
 #### 4. **Algoritmos de Consenso Disponíveis**
 
@@ -158,7 +264,6 @@ Tier 3: Opus (Heavy Computation)
 ├─ Swarm coordination
 └─ Máxima capacidade
 
-TEXT
 
 #### 6. **Memory System (Sistema de Memória)**
 
@@ -185,7 +290,6 @@ MEMÓRIA DISTRIBUÍDA
 ├─ Local (específico)
 └─ Usuário (persistente)
 
-TEXT
 
 #### 7. **Otimizações de Performance**
 
@@ -236,6 +340,7 @@ TEXT
 - Fallback automático
 
 **Exemplo:**
+
 Task: "Desenvolva uma API REST em Python"
 ↓
 Automatic Agent Selection:
@@ -245,7 +350,6 @@ Automatic Agent Selection:
 ├─ Security (auditoria)
 └─ Documenter (documentação)
 
-TEXT
 
 #### 🐝 **2. Coordenação de Swarms**
 
@@ -384,8 +488,9 @@ const result = await swarm.orchestrate({
 });
 
 console.log("Resultado:", result);
+
 Exemplo 2: Busca Vetorial e Memória
-JAVASCRIPT
+
 // Buscar padrões similares
 const patterns = await memory_search({
   query: "autenticação JWT com refresh",
@@ -407,8 +512,9 @@ await memory_store({
 
 // Consolidar conhecimento
 await agentdb_consolidate();
+
 Exemplo 3: Roteamento Inteligente
-TEXT
+
 INTELIGENT ROUTING
 
 Tarefa simples (WASM)
@@ -421,8 +527,9 @@ Tarefa média
 
 Tarefa complexa
 → Automático usa Opus + swarm
+
 Exemplo 4: Swarm com Consenso Bizantino
-JAVASCRIPT
+
 await swarm_init({
   topology: "mesh",
   maxAgents: 5,
@@ -431,8 +538,9 @@ await swarm_init({
 });
 
 // Resultado: mesmo com agentes falhando, consenso é atingido
+
 Exemplo 5: Learning Workflow
-JAVASCRIPT
+
 // 1. RETRIEVE - Buscar padrões similares
 const patterns = await memory_search(query);
 
@@ -447,8 +555,9 @@ await memory_store(distilled, namespace="learned");
 
 // 5. ROUTE - Usar em futuras tarefas
 const nextRoute = await intelligent_route(nextTask, namespace="learned");
+
 Exemplo 6: Anti-Drift Configuration
-JAVASCRIPT
+
 // Evitar que swarm saia do objetivo
 swarm_init({
   topology: "hierarchical",     // Coordinator força alinhamento
@@ -458,8 +567,9 @@ swarm_init({
   memoryNamespace: "shared",     // Memória compartilhada
   verificationGates: true        // Portas de verificação
 });
+
 Exemplo 7: Multi-Provider com Failover
-JAVASCRIPT
+
 const config = {
   providers: [
     { name: "anthropic", model: "claude-opus", priority: 1 },
@@ -471,8 +581,9 @@ const config = {
 };
 
 // Automático usa Claude primeiro, falls back para OpenAI se indisponível
+
 Exemplo 8: GitHub Integration
-JAVASCRIPT
+
 // Code Review automático
 await $github-code-review({
   repo: "seu-repo",
@@ -485,8 +596,9 @@ await $github-workflow-automation({
   trigger: "push",
   workflow: "test-and-deploy"
 });
+
 Exemplo 9: DDD Bounded Contexts
-TEXT
+
 5 contextos de domínio limpo:
 - Core (Agents, Swarms, Tasks)
 - Memory (AgentDB, HNSW, Cache)
@@ -496,8 +608,9 @@ TEXT
 
 Cada contexto tem interfaces limpas
 Agentes não podem cruzar fronteiras
+
 Exemplo 10: Specification-Driven Development
-TEXT
+
 ADRs (Architecture Decision Records) definem o sistema:
 - ADR-001: Foundation com agentic-flow
 - ADR-006: Unified Memory Service
@@ -507,6 +620,7 @@ ADRs (Architecture Decision Records) definem o sistema:
 Agents respeitam especificações
 Statusline mostra % de compliance
 Merges são bloqueadas se violar spec
+
 🎯 Performance Benchmarks
 Métrica	Valor
 Routing Decision Latency	0.57ms
@@ -537,9 +651,10 @@ Documentation Generation - Equipe de documentação
 Performance Optimization - Agentes de otimização
 DevOps Automation - Coordenação de infraestrutura
 Research & Analysis - Pesquisa + análise + relatório
+
 🚀 Como Começar
+
 Quick Start
-BASH
 # One-line install (recommended)
 curl -fsSL https://cdn.jsdelivr.net/gh/ruvnet/claude-flow@main/scripts/install.sh | bash
 
@@ -549,15 +664,17 @@ npx ruflo@latest init --wizard
 # Or install globally
 npm install -g ruflo@latest
 ruflo init
+
 MCP Setup
-BASH
+
 # Add ruflo MCP server to Claude
 claude mcp add ruflo -- npx ruflo@latest mcp start
 
 # Verify installation
 claude mcp list
+
 Primeiro Comando
-BASH
+
 # List available agents
 ruflo --list
 
@@ -566,6 +683,7 @@ ruflo --agent coder --task "Implement user authentication"
 
 # Initialize MCP server
 ruflo mcp start
+
 📖 Recursos Adicionais
 GitHub: https://github.com/ruvnet/ruflo
 Documentação: https://ruflo.dev
