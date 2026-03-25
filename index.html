@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Avaliação de Andebolistas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e55a2b;
+            --secondary: #004e89;
+            --accent: #1a659e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gradient-1: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            --gradient-2: linear-gradient(135deg, #004e89 0%, #1a659e 100%);
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 78, 137, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 107, 53, 0.05) 0%, transparent 50%);
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo::before {
+            content: "🏐";
+            font-size: 2rem;
+            -webkit-text-fill-color: initial;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--light);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--gradient-2);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 78, 137, 0.4);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Athlete Info Card */
+        .athlete-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .athlete-header {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .input-group input, .input-group select {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+        }
+
+        .profile-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .profile-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-1);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .profile-btn:hover::before, .profile-btn.active::before {
+            left: 0;
+        }
+
+        .profile-btn.active, .profile-btn:hover {
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Test Grid */
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .test-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .test-card:hover::before {
+            opacity: 1;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .test-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 0.25rem;
+        }
+
+        .test-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .test-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .test-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .test-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .test-input label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .test-input input {
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Results Section */
+        .results-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(26, 26, 46, 0.98);
+            border-left: 2px solid var(--primary);
+            padding: 2rem;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.3);
+        }
+
+        .results-panel.open {
+            right: 0;
+        }
+
+        .results-toggle {
+            position: fixed;
+            right: 2rem;
+            bottom: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .results-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .radar-chart {
+            width: 100%;
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        .total-score {
+            text-align: center;
+            padding: 2rem;
+            background: var(--gradient-2);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .total-score h2 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .classification {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .category-scores {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .category-name {
+            font-weight: 600;
+        }
+
+        .category-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                justify-content: center;
+            }
+
+            .tests-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .test-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-tabs, .results-toggle, .action-bar {
+                display: none;
+            }
+            
+            .section-card {
+                display: block !important;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Animations */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">Sistema de Avaliação de Andebolistas</div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('geral-campo')">Campo</button>
+                <button class="nav-tab" onclick="showSection('geral-ginasio')">Ginásio</button>
+                <button class="nav-tab" onclick="showSection('extremo')">Extremo</button>
+                <button class="nav-tab" onclick="showSection('ponta')">Ponta</button>
+                <button class="nav-tab" onclick="showSection('central')">Central</button>
+                <button class="nav-tab" onclick="showSection('guarda-redes')">Guarda-Redes</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Athlete Info -->
+        <div class="athlete-card">
+            <div class="athlete-header">
+                <div class="input-group">
+                    <label>Nome do Atleta</label>
+                    <input type="text" id="athleteName" placeholder="Nome completo">
+                </div>
+                <div class="input-group">
+                    <label>Data de Nascimento</label>
+                    <input type="date" id="birthDate">
+                </div>
+                <div class="input-group">
+                    <label>Data da Avaliação</label>
+                    <input type="date" id="evalDate">
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 1rem;">
+                <label>Perfil do Atleta</label>
+                <div class="profile-selector">
+                    <button class="profile-btn active" onclick="setProfile('formacao', this)">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
+                        <div style="font-weight: 700;">Formação</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Sub-21</div>
+                    </button>
+                    <button class="profile-btn" onclick="setProfile('senior', this)">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
+                        <div style="font-weight: 700;">Sénior</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Competição</div>
+                    </button>
+                    <button class="profile-btn" onclick="setProfile('elite', this)">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏆</div>
+                        <div style="font-weight: 700;">Élite</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Alto Rendimento</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Género</label>
+                <div class="profile-selector" style="max-width: 300px;">
+                    <button class="profile-btn active" onclick="setGender('M', this)">Masculino</button>
+                    <button class="profile-btn" onclick="setGender('F', this)">Feminino</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Campo -->
+        <div id="geral-campo" class="section-card active">
+            <h2 class="section-title">🏃 Bateria Geral - Campo</h2>
+            <p class="section-subtitle">Avaliação física e técnica em campo</p>
+            
+            <div class="tests-grid">
+                <!-- Resistência Aeróbia -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Resistência Aeróbia</div>
+                            <span class="test-badge">Shuttle Run / Bip-Test</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Teste até exaustão. Duração: ~15-20 minutos.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Nível Bip-Test</label>
+                            <input type="number" id="aerobia-nivel" step="0.1" onchange="calcularAerobia()">
+                        </div>
+                        <div class="test-input">
+                            <label>VO2 (mL/kg/min)</label>
+                            <input type="number" id="aerobia-vo2" step="0.1" readonly>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="aerobia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="aerobia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Resistência Anaeróbia -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Resistência Anaeróbia</div>
+                            <span class="test-badge">6 Sprints 30m</span>
+                        </div>
+                    </div>
+                    <p class="test-description">6 sprints de 30m com 30s recuperação ativa.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Sprint Médio (s)</label>
+                            <input type="number" id="anaerobia-sprint" step="0.1" onchange="calcularAnaerobia()">
+                        </div>
+                        <div class="test-input">
+                            <label>Índice Fadiga (%)</label>
+                            <input type="number" id="anaerobia-fadiga" step="0.1" onchange="calcularAnaerobia()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="anaerobia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="anaerobia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Potência Muscular -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Potência Muscular</div>
+                            <span class="test-badge">Salto Vertical CMJ</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Contramovimento Jump. Duração: ~5 minutos.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Altura do Salto (cm)</label>
+                            <input type="number" id="potencia-altura" onchange="calcularPotencia()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="potencia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="potencia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Agilidade -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Agilidade</div>
+                            <span class="test-badge">T-Test Modificado</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Teste de agilidade com cones. Duração: ~5 minutos.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Tempo (s)</label>
+                            <input type="number" id="agilidade-tempo" step="0.1" onchange="calcularAgilidade()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="agilidade-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="agilidade-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Força Superior -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Superior</div>
+                            <span class="test-badge">Flexões 1 minuto</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Máximo de flexões de braço em 1 minuto.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Repetições</label>
+                            <input type="number" id="forca-superior-reps" onchange="calcularForcaSuperior()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="forca-superior-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="forca-superior-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Força Core -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Core</div>
+                            <span class="test-badge">Abdominais 1 minuto</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Máximo de abdominais em 1 minuto.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Repetições</label>
+                            <input type="number" id="core-reps" onchange="calcularCore()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="core-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="core-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Força Preensão -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Preensão</div>
+                            <span class="test-badge">Dinamómetro Manual</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Melhor de 3 tentativas por mão. Média das duas mãos.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Mão Direita (kg)</label>
+                            <input type="number" id="preensao-md" step="0.1" onchange="calcularPreensao()">
+                        </div>
+                        <div class="test-input">
+                            <label>Mão Esquerda (kg)</label>
+                            <input type="number" id="preensao-me" step="0.1" onchange="calcularPreensao()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="preensao-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="preensao-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Técnica Remate -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Técnica - Remate</div>
+                            <span class="test-badge">10 Remates em Suspensão</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Zona de 9m. % de acertos na baliza.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>% Acertos</label>
+                            <input type="number" id="remate-acertos" min="0" max="100" onchange="calcularRemate()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="remate-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="remate-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Técnica Passe -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Técnica - Passe</div>
+                            <span class="test-badge">10 Passes a 7m</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Precisão de passe a alvo fixo a 7 metros.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>% Acertos</label>
+                            <input type="number" id="passe-acertos" min="0" max="100" onchange="calcularPasse()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="passe-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="passe-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Tática -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Tática</div>
+                            <span class="test-badge">Jogo 3x3 (5 min)</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Leitura, Decisão, Comunicação, Execução (0-5 cada)</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Leitura</label>
+                            <input type="number" id="tatica-leitura" min="0" max="5" step="1" onchange="calcularTatica()">
+                        </div>
+                        <div class="test-input">
+                            <label>Decisão</label>
+                            <input type="number" id="tatica-decisao" min="0" max="5" step="1" onchange="calcularTatica()">
+                        </div>
+                        <div class="test-input">
+                            <label>Comunicação</label>
+                            <input type="number" id="tatica-comunicacao" min="0" max="5" step="1" onchange="calcularTatica()">
+                        </div>
+                        <div class="test-input">
+                            <label>Execução</label>
+                            <input type="number" id="tatica-execucao" min="0" max="5" step="1" onchange="calcularTatica()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="tatica-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="tatica-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Mental -->
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Mental</div>
+                            <span class="test-badge">Teste de Pressão</span>
+                        </div>
+                    </div>
+                    <p class="test-description">5 remates com pressão. Acertos, Recuperação, Confiança, Foco.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Acertos</label>
+                            <input type="number" id="mental-acertos" min="0" max="5" step="1" onchange="calcularMental()">
+                        </div>
+                        <div class="test-input">
+                            <label>Recuperação</label>
+                            <input type="number" id="mental-recuperacao" min="0" max="5" step="1" onchange="calcularMental()">
+                        </div>
+                        <div class="test-input">
+                            <label>Confiança</label>
+                            <input type="number" id="mental-confianca" min="0" max="5" step="1" onchange="calcularMental()">
+                        </div>
+                        <div class="test-input">
+                            <label>Foco</label>
+                            <input type="number" id="mental-foco" min="0" max="5" step="1" onchange="calcularMental()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="mental-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="mental-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Ginásio -->
+        <div id="geral-ginasio" class="section-card">
+            <h2 class="section-title">🏋️ Bateria Geral - Ginásio</h2>
+            <p class="section-subtitle">Avaliação física em ambiente controlado</p>
+            
+            <div class="tests-grid">
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Resistência Aeróbia</div>
+                            <span class="test-badge">Tapete Rolante</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Protocolo progressivo até exaustão.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Velocidade Final (km/h)</label>
+                            <input type="number" id="gin-aerobia-vel" step="0.1" onchange="calcularGinAerobia()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-aerobia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-aerobia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Resistência Anaeróbia</div>
+                            <span class="test-badge">Ergóbike Wingate</span>
+                        </div>
+                    </div>
+                    <p class="test-description">3×30s sprints máximos.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Potência Máx (W)</label>
+                            <input type="number" id="gin-anaerobia-watts" onchange="calcularGinAnaerobia()">
+                        </div>
+                        <div class="test-input">
+                            <label>Índice Fadiga (%)</label>
+                            <input type="number" id="gin-anaerobia-fadiga" step="0.1" onchange="calcularGinAnaerobia()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-anaerobia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-anaerobia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Potência Muscular</div>
+                            <span class="test-badge">Leg Press Power</span>
+                        </div>
+                    </div>
+                    <p class="test-description">60% 1RM, máximas reps em 30s (3 séries).</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Potência Média (W)</label>
+                            <input type="number" id="gin-potencia-watts" onchange="calcularGinPotencia()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-potencia-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-potencia-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Superior</div>
+                            <span class="test-badge">Supino 1RM</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Uma repetição máxima.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>1RM (kg)</label>
+                            <input type="number" id="gin-forca-1rm" onchange="calcularGinForca()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-forca-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-forca-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Core</div>
+                            <span class="test-badge">Máquina Abdominais</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Série máxima até falha.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Peso Máximo (kg)</label>
+                            <input type="number" id="gin-core-peso" onchange="calcularGinCore()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-core-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-core-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Força Rotacional</div>
+                            <span class="test-badge">Máquina Rotacional</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Média entre lado direito e esquerdo.</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>Peso Máximo (kg)</label>
+                            <input type="number" id="gin-rot-peso" onchange="calcularGinRot()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="gin-rot-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gin-rot-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Extremo -->
+        <div id="extremo" class="section-card">
+            <h2 class="section-title">⚡ Bateria Específica - Extremo</h2>
+            <p class="section-subtitle">Avaliação específica para posição de extremo (esquerdo/direito)</p>
+            
+            <div class="tests-grid">
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Remate em Suspensão + Velocidade</div>
+                            <span class="test-badge">Zona 9m</span>
+                        </div>
+                    </div>
+                    <p class="test-description">10 remates em suspensão + medição velocidade.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>% Acertos</label>
+                            <input type="number" id="ext-remate-acertos" min="0" max="100" onchange="calcularExtRemate()">
+                        </div>
+                        <div class="test-input">
+                            <label>Velocidade (km/h)</label>
+                            <input type="number" id="ext-remate-vel" step="0.1" onchange="calcularExtRemate()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="ext-remate-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="ext-remate-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Remate em Corrida</div>
+                            <span class="test-badge">Contra-Ataque</span>
+                        </div>
+                    </div>
+                    <p class="test-description">10 remates em corrida (5 cada lado).</p>
+                    <div class="test-inputs">
+                        <div class="test-input" style="grid-column: 1 / -1;">
+                            <label>% Acertos</label>
+                            <input type="number" id="ext-corrida-acertos" min="0" max="100" onchange="calcularExtCorrida()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="ext-corrida-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="ext-corrida-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <div>
+                            <div class="test-name">Defesa Lateral com Pressão</div>
+                            <span class="test-badge">3×2 minutos</span>
+                        </div>
+                    </div>
+                    <p class="test-description">Marcação em zona de 9m.</p>
+                    <div class="test-inputs">
+                        <div class="test-input">
+                            <label>Interceptações/min</label>
+                            <input type="number" id="ext-defesa-inter" step="0.1" onchange="calcularExtDefesa()">
+                        </div>
+                        <div class="test-input">
+                            <label>Faltas/min</label>
+                            <input type="number" id="ext-defesa-faltas" step="0.1" onchange="calcularExtDefesa()">
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <span class="score-label">Score (0-20)</span>
+                        <span class="score-value" id="ext-defesa-score">0</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="ext-defesa-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seções Ponta, Central e Guarda-Redes (estrutura similar) -->
+        <div id="ponta" class="section-card">
+            <h2 class="section-title">🎯 Bateria Específica - Ponta</h2>
+            <p class="section-subtitle">Em desenvolvimento - utilizar bateria geral + critérios específicos de ponta</p>
+            <div class="tests-grid">
+                <div class="test-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🚧</div>
+                    <h3>Módulo em Desenvolvimento</h3>
+                    <p>Os testes específicos para ponta serão implementados brevemente.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="central" class="section-card">
+            <h2 class="section-title">🎯 Bateria Específica - Central/Pivot</h2>
+            <p class="section-subtitle">Em desenvolvimento - utilizar bateria geral + critérios específicos de central</p>
+            <div class="tests-grid">
+                <div class="test-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🚧</div>
+                    <h3>Módulo em Desenvolvimento</h3>
+                    <p>Os testes específicos para central/pivot serão implementados brevemente.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="guarda-redes" class="section-card">
+            <h2 class="section-title">🥅 Bateria Específica - Guarda-Redes</h2>
+            <p class="section-subtitle">Em desenvolvimento - utilizar bateria geral + critérios específicos de guarda-redes</p>
+            <div class="tests-grid">
+                <div class="test-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🚧</div>
+                    <h3>Módulo em Desenvolvimento</h3>
+                    <p>Os testes específicos para guarda-redes serão implementados brevemente.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="calcularTotal()">
+                <span>📊</span> Calcular Resultados
+            </button>
+            <button class="btn btn-secondary" onclick="exportarPDF()">
+                <span>📄</span> Exportar PDF
+            </button>
+            <button class="btn btn-success" onclick="guardarAvaliacao()">
+                <span>💾</span> Guardar Avaliação
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Panel -->
+    <button class="results-toggle" onclick="toggleResults()">📊</button>
+    
+    <div class="results-panel" id="resultsPanel">
+        <h2 style="margin-bottom: 2rem; color: var(--primary);">Resultados da Avaliação</h2>
+        
+        <div class="total-score">
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">Score Global</div>
+            <h2 id="totalScore">0.0</h2>
+            <div class="classification" id="classificacao">Não Avaliado</div>
+        </div>
+
+        <canvas id="radarChart" class="radar-chart"></canvas>
+
+        <div class="category-scores" id="categoryScores">
+            <div class="category-item">
+                <span class="category-name">Resistência Aeróbia</span>
+                <span class="category-value" id="res-aerobia">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Resistência Anaeróbia</span>
+                <span class="category-value" id="res-anaerobia">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Potência Muscular</span>
+                <span class="category-value" id="cat-potencia">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Força</span>
+                <span class="category-value" id="cat-forca">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Técnica</span>
+                <span class="category-value" id="cat-tecnica">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Tática</span>
+                <span class="category-value" id="cat-tatica">0</span>
+            </div>
+            <div class="category-item">
+                <span class="category-name">Mental</span>
+                <span class="category-value" id="cat-mental">0</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 12px;">
+            <h4 style="margin-bottom: 1rem; color: var(--primary);">Observações</h4>
+            <textarea id="observacoes" style="width: 100%; min-height: 100px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem; color: var(--light); resize: vertical;" placeholder="Adicionar observações..."></textarea>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Estado global
+        let currentProfile = 'formacao';
+        let currentGender = 'M';
+        let scores = {};
+
+        // Tabelas de avaliação
+        const tabelas = {
+            formacao: {
+                M: {
+                    aerobia: [{min: 13, score: 20}, {min: 12, max: 13, score: 18}, {min: 11, max: 12, score: 16}, {min: 10, max: 11, score: 12}, {max: 10, score: 6}],
+                    anaerobia: [{sprint: 4.2, fadiga: 6, score: 20}, {sprint: 4.4, fadiga: 11, score: 17}, {sprint: 4.7, fadiga: 16, score: 14}, {sprint: 5.0, fadiga: 21, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 65, score: 20}, {min: 60, max: 65, score: 17}, {min: 55, max: 60, score: 14}, {min: 50, max: 55, score: 10}, {max: 50, score: 5}],
+                    agilidade: [{min: 9.5, score: 20}, {min: 9.5, max: 10.0, score: 17}, {min: 10.0, max: 10.7, score: 14}, {min: 10.7, max: 11.5, score: 10}, {max: 11.5, score: 5}],
+                    forcaSuperior: [{min: 55, score: 20}, {min: 45, max: 55, score: 17}, {min: 35, max: 45, score: 14}, {min: 25, max: 35, score: 10}, {max: 25, score: 5}],
+                    core: [{min: 55, score: 20}, {min: 45, max: 55, score: 17}, {min: 35, max: 45, score: 14}, {min: 25, max: 35, score: 10}, {max: 25, score: 5}],
+                    preensao: [{min: 60, score: 20}, {min: 50, max: 60, score: 17}, {min: 40, max: 50, score: 14}, {min: 30, max: 40, score: 10}, {max: 30, score: 5}],
+                    remate: [{min: 80, score: 20}, {min: 70, max: 80, score: 17}, {min: 60, max: 70, score: 14}, {min: 50, max: 60, score: 10}, {max: 50, score: 5}],
+                    passe: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}]
+                },
+                F: {
+                    aerobia: [{min: 12, score: 20}, {min: 11, max: 12, score: 18}, {min: 10, max: 11, score: 16}, {min: 9, max: 10, score: 12}, {max: 9, score: 6}],
+                    anaerobia: [{sprint: 4.6, fadiga: 7, score: 20}, {sprint: 4.9, fadiga: 12, score: 17}, {sprint: 5.2, fadiga: 17, score: 14}, {sprint: 5.6, fadiga: 22, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 60, score: 20}, {min: 55, max: 60, score: 17}, {min: 50, max: 55, score: 14}, {min: 45, max: 50, score: 10}, {max: 45, score: 5}],
+                    agilidade: [{min: 10.0, score: 20}, {min: 10.0, max: 10.6, score: 17}, {min: 10.6, max: 11.3, score: 14}, {min: 11.3, max: 12.2, score: 10}, {max: 12.2, score: 5}],
+                    forcaSuperior: [{min: 40, score: 20}, {min: 32, max: 40, score: 17}, {min: 24, max: 32, score: 14}, {min: 16, max: 24, score: 10}, {max: 16, score: 5}],
+                    core: [{min: 45, score: 20}, {min: 36, max: 45, score: 17}, {min: 27, max: 36, score: 14}, {min: 18, max: 27, score: 10}, {max: 18, score: 5}],
+                    preensao: [{min: 45, score: 20}, {min: 38, max: 45, score: 17}, {min: 31, max: 38, score: 14}, {min: 24, max: 31, score: 10}, {max: 24, score: 5}],
+                    remate: [{min: 75, score: 20}, {min: 65, max: 75, score: 17}, {min: 55, max: 65, score: 14}, {min: 45, max: 55, score: 10}, {max: 45, score: 5}],
+                    passe: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}]
+                }
+            },
+            senior: {
+                M: {
+                    aerobia: [{min: 13, score: 20}, {min: 12, max: 13, score: 18}, {min: 11, max: 12, score: 15}, {min: 10, max: 11, score: 11}, {max: 10, score: 5}],
+                    anaerobia: [{sprint: 4.0, fadiga: 5, score: 20}, {sprint: 4.2, fadiga: 10, score: 17}, {sprint: 4.5, fadiga: 15, score: 14}, {sprint: 4.9, fadiga: 20, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 70, score: 20}, {min: 65, max: 70, score: 17}, {min: 60, max: 65, score: 14}, {min: 55, max: 60, score: 10}, {max: 55, score: 5}],
+                    agilidade: [{min: 9.0, score: 20}, {min: 9.0, max: 9.5, score: 17}, {min: 9.5, max: 10.5, score: 14}, {min: 10.5, max: 11.5, score: 10}, {max: 11.5, score: 5}],
+                    forcaSuperior: [{min: 65, score: 20}, {min: 55, max: 65, score: 17}, {min: 45, max: 55, score: 14}, {min: 35, max: 45, score: 10}, {max: 35, score: 5}],
+                    core: [{min: 70, score: 20}, {min: 60, max: 70, score: 17}, {min: 50, max: 60, score: 14}, {min: 40, max: 50, score: 10}, {max: 40, score: 5}],
+                    preensao: [{min: 65, score: 20}, {min: 55, max: 65, score: 17}, {min: 45, max: 55, score: 14}, {min: 35, max: 45, score: 10}, {max: 35, score: 5}],
+                    remate: [{min: 85, score: 20}, {min: 75, max: 85, score: 17}, {min: 65, max: 75, score: 14}, {min: 55, max: 65, score: 10}, {max: 55, score: 5}],
+                    passe: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}]
+                },
+                F: {
+                    aerobia: [{min: 13, score: 20}, {min: 12, max: 13, score: 18}, {min: 11, max: 12, score: 15}, {min: 10, max: 11, score: 11}, {max: 10, score: 5}],
+                    anaerobia: [{sprint: 4.4, fadiga: 6, score: 20}, {sprint: 4.7, fadiga: 11, score: 17}, {sprint: 5.0, fadiga: 16, score: 14}, {sprint: 5.4, fadiga: 21, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 62, score: 20}, {min: 57, max: 62, score: 17}, {min: 52, max: 57, score: 14}, {min: 47, max: 52, score: 10}, {max: 47, score: 5}],
+                    agilidade: [{min: 9.7, score: 20}, {min: 9.7, max: 10.3, score: 17}, {min: 10.3, max: 11.0, score: 14}, {min: 11.0, max: 12.0, score: 10}, {max: 12.0, score: 5}],
+                    forcaSuperior: [{min: 48, score: 20}, {min: 40, max: 48, score: 17}, {min: 32, max: 40, score: 14}, {min: 24, max: 32, score: 10}, {max: 24, score: 5}],
+                    core: [{min: 55, score: 20}, {min: 45, max: 55, score: 17}, {min: 35, max: 45, score: 14}, {min: 25, max: 35, score: 10}, {max: 25, score: 5}],
+                    preensao: [{min: 50, score: 20}, {min: 42, max: 50, score: 17}, {min: 34, max: 42, score: 14}, {min: 26, max: 34, score: 10}, {max: 26, score: 5}],
+                    remate: [{min: 80, score: 20}, {min: 70, max: 80, score: 17}, {min: 60, max: 70, score: 14}, {min: 50, max: 60, score: 10}, {max: 50, score: 5}],
+                    passe: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}]
+                }
+            },
+            elite: {
+                M: {
+                    aerobia: [{min: 14, score: 20}, {min: 13, max: 14, score: 18}, {min: 12, max: 13, score: 15}, {min: 11, max: 12, score: 11}, {max: 11, score: 5}],
+                    anaerobia: [{sprint: 3.9, fadiga: 4, score: 20}, {sprint: 4.1, fadiga: 8, score: 17}, {sprint: 4.4, fadiga: 13, score: 14}, {sprint: 4.8, fadiga: 18, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 75, score: 20}, {min: 70, max: 75, score: 17}, {min: 65, max: 70, score: 14}, {min: 60, max: 65, score: 10}, {max: 60, score: 5}],
+                    agilidade: [{min: 8.7, score: 20}, {min: 8.7, max: 9.2, score: 17}, {min: 9.2, max: 10.0, score: 14}, {min: 10.0, max: 11.0, score: 10}, {max: 11.0, score: 5}],
+                    forcaSuperior: [{min: 75, score: 20}, {min: 65, max: 75, score: 17}, {min: 55, max: 65, score: 14}, {min: 45, max: 55, score: 10}, {max: 45, score: 5}],
+                    core: [{min: 80, score: 20}, {min: 70, max: 80, score: 17}, {min: 60, max: 70, score: 14}, {min: 50, max: 60, score: 10}, {max: 50, score: 5}],
+                    preensao: [{min: 70, score: 20}, {min: 60, max: 70, score: 17}, {min: 50, max: 60, score: 14}, {min: 40, max: 50, score: 10}, {max: 40, score: 5}],
+                    remate: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}],
+                    passe: [{min: 90, score: 20}, {min: 80, max: 90, score: 17}, {min: 70, max: 80, score: 14}, {min: 60, max: 70, score: 10}, {max: 60, score: 5}]
+                },
+                F: {
+                    aerobia: [{min: 13, score: 20}, {min: 12, max: 13, score: 18}, {min: 11, max: 12, score: 15}, {min: 10, max: 11, score: 11}, {max: 10, score: 5}],
+                    anaerobia: [{sprint: 4.2, fadiga: 5, score: 20}, {sprint: 4.5, fadiga: 10, score: 17}, {sprint: 4.8, fadiga: 15, score: 14}, {sprint: 5.2, fadiga: 20, score: 10}, {sprint: 999, fadiga: 999, score: 5}],
+                    potencia: [{min: 65, score: 20}, {min: 60, max: 65, score: 17}, {min: 55, max: 60, score: 14}, {min: 50, max: 55, score: 10}, {max
