@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         body {
-            background-color: #F3F4F6; /* Fundo mais claro, estilo app móvel */
+            background-color: #F3F4F6;
             color: #111827;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
@@ -116,15 +116,19 @@
             </div>
             <div>
                 <h3 class="text-gray-900 font-bold mb-3">Arrows</h3>
-                <div id="grid-arrows" class="grid grid-cols-4 gap-3"></div>
+                <div id="grid-arrows" class="grid grid-cols-4 sm:grid-cols-8 gap-3"></div>
+            </div>
+            <div>
+                <h3 class="text-gray-900 font-bold mb-3 flex items-center gap-2">Shapes <i class="ph-fill ph-brain text-yellow-500 text-sm"></i></h3>
+                <div id="grid-shapes" class="grid grid-cols-4 sm:grid-cols-8 gap-3"></div>
             </div>
             <div>
                 <h3 class="text-gray-900 font-bold mb-3">Numbers</h3>
-                <div id="grid-numbers" class="grid grid-cols-4 gap-3"></div>
+                <div id="grid-numbers" class="grid grid-cols-4 sm:grid-cols-6 gap-3"></div>
             </div>
             <div>
-                <h3 class="text-gray-900 font-bold mb-3">Letters</h3>
-                <div id="grid-letters" class="grid grid-cols-4 sm:grid-cols-6 gap-3"></div>
+                <h3 class="text-gray-900 font-bold mb-3 flex items-center gap-2">Letters <i class="ph-fill ph-brain text-yellow-500 text-sm"></i></h3>
+                <div id="grid-letters" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3"></div>
             </div>
         </div>
 
@@ -191,6 +195,7 @@
         </div>
 
         <div id="wizardStep3" class="wizard-step hidden flex-1 overflow-y-auto space-y-6 pb-4">
+            
             <div class="flex bg-gray-100 rounded-full p-1 mb-6">
                 <button id="btnDurCount" onclick="setDurationMode('countdown')" class="flex-1 py-2 rounded-full font-bold text-sm bg-gray-900 text-white shadow">⏳ Countdown</button>
                 <button id="btnDurRounds" onclick="setDurationMode('rounds')" class="flex-1 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-900">🔄 Rounds</button>
@@ -292,18 +297,28 @@
         // ================= DADOS =================
         const data = {
             colors: [
-                {id: 'red', val: '#EF4444'}, {id: 'blue', val: '#3B82F6'}, {id: 'green', val: '#10B981'}, {id: 'yellow', val: '#EAB308'}, 
+                {id: 'red', val: '#EF4444'}, {id: 'blue', val: '#3B82F6'}, {id: 'green', val: '#10B981'}, {id: 'yellow', val: '#FDE047'}, 
                 {id: 'purple', val: '#A855F7'}, {id: 'orange', val: '#F97316'}, {id: 'black', val: '#000000'}, {id: 'gray', val: '#4B5563'}
             ],
-            arrows: ['ph-arrow-left', 'ph-arrow-up-left', 'ph-arrow-up', 'ph-arrow-up-right', 'ph-arrow-right', 'ph-arrow-down-right', 'ph-arrow-down', 'ph-arrow-down-left']
+            arrows: ['ph-arrow-left', 'ph-arrow-up-left', 'ph-arrow-up', 'ph-arrow-up-right', 'ph-arrow-right', 'ph-arrow-down-right', 'ph-arrow-down', 'ph-arrow-down-left'],
+            shapes: {
+                circle: '<circle cx="50" cy="50" r="45" />',
+                triangle: '<polygon points="50,5 95,95 5,95" />',
+                square: '<rect x="10" y="10" width="80" height="80" rx="5" />',
+                diamond: '<polygon points="50,5 95,50 50,95 5,50" />',
+                pentagon: '<polygon points="50,5 95,38 78,95 22,95 5,38" />',
+                hexagon: '<polygon points="50,5 93,25 93,75 50,95 7,75 7,25" />',
+                octagon: '<polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" />',
+                star: '<polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35" />'
+            }
         };
 
-        let selections = { colors: new Set(), arrows: new Set(), numbers: new Set(), letters: new Set() };
+        let selections = { colors: new Set(), arrows: new Set(), shapes: new Set(), numbers: new Set(), letters: new Set() };
         
         // Estado do Wizard
         let currentStep = 1;
-        let transitionMode = 'timed'; // 'timed', 'touch'
-        let durMode = 'countdown'; // 'countdown', 'rounds'
+        let transitionMode = 'timed'; 
+        let durMode = 'countdown'; 
 
         // ================= UI NAVIGATION =================
         window.navTo = (screenId, reset = false) => {
@@ -322,7 +337,7 @@
         function resetWizard() {
             currentStep = 1;
             document.querySelectorAll('input.stimulus-checkbox').forEach(i => i.checked = false);
-            selections = { colors: new Set(), arrows: new Set(), numbers: new Set(), letters: new Set() };
+            selections = { colors: new Set(), arrows: new Set(), shapes: new Set(), numbers: new Set(), letters: new Set() };
             updateWizardUI();
         }
 
@@ -340,22 +355,18 @@
         };
 
         function updateWizardUI() {
-            // Esconder todos
             [1,2,3,4].forEach(i => document.getElementById(`wizardStep${i}`).classList.add('hidden'));
             document.getElementById(`wizardStep${currentStep}`).classList.remove('hidden');
 
-            // Botões Header/Footer
             document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
             document.getElementById('btnNext').classList.toggle('hidden', currentStep === 4);
             document.getElementById('btnStart').classList.toggle('hidden', currentStep !== 4);
 
-            // Títulos
             const titles = ["SELECT YOUR STIMULI", "SELECT YOUR TRANSITION", "SELECT YOUR DURATION", "TRAINING OVERVIEW"];
             const descs = ["Select which cues will appear", "Determine how and when stimuli change", "Choose the length of your session", "Does everything look good?"];
             document.getElementById('stepTitle').innerHTML = titles[currentStep-1].replace(/(STIMULI|TRANSITION|DURATION|OVERVIEW)/, '<span class="text-orange-500">$1</span>');
             document.getElementById('stepDesc').innerText = descs[currentStep-1];
 
-            // Stepper visual
             [1,2,3,4].forEach(i => {
                 let dot = document.getElementById(`dot${i}`);
                 if (i < currentStep) { dot.className = "step-dot w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-sm"; dot.innerHTML = '<i class="ph-bold ph-check"></i>'; }
@@ -371,14 +382,21 @@
         // ================= STEP 1: STIMULI SETUP =================
         function buildSetupUI() {
             const createCb = (cat, val, html) => `<label><input type="checkbox" class="stimulus-checkbox" onchange="updateSel('${cat}', '${val}', this.checked)">${html}</label>`;
+            
             const colors = document.getElementById('grid-colors');
             data.colors.forEach(c => colors.insertAdjacentHTML('beforeend', createCb('colors', c.val, `<div class="color-label w-12 h-12 shadow-sm" style="background-color: ${c.val}"></div>`)));
+            
             const arrows = document.getElementById('grid-arrows');
             data.arrows.forEach(a => arrows.insertAdjacentHTML('beforeend', createCb('arrows', a, `<div class="stimulus-label"><i class="ph-bold ${a}"></i></div>`)));
+            
+            const shapes = document.getElementById('grid-shapes');
+            Object.keys(data.shapes).forEach(s => shapes.insertAdjacentHTML('beforeend', createCb('shapes', s, `<div class="stimulus-label p-2"><svg viewBox="0 0 100 100" fill="currentColor" class="w-full h-full">${data.shapes[s]}</svg></div>`)));
+
             const nums = document.getElementById('grid-numbers');
-            for(let i=1; i<=8; i++) nums.insertAdjacentHTML('beforeend', createCb('numbers', i, `<div class="stimulus-label">${i}</div>`));
+            for(let i=1; i<=12; i++) nums.insertAdjacentHTML('beforeend', createCb('numbers', i, `<div class="stimulus-label">${i}</div>`));
+            
             const lets = document.getElementById('grid-letters');
-            for(let i=0; i<12; i++) lets.insertAdjacentHTML('beforeend', createCb('letters', String.fromCharCode(65+i), `<div class="stimulus-label">${String.fromCharCode(65+i)}</div>`));
+            for(let i=0; i<26; i++) lets.insertAdjacentHTML('beforeend', createCb('letters', String.fromCharCode(65+i), `<div class="stimulus-label">${String.fromCharCode(65+i)}</div>`));
         }
         window.updateSel = (cat, val, isChk) => isChk ? selections[cat].add(val) : selections[cat].delete(val);
 
@@ -431,7 +449,7 @@
         function getDrillData() {
             return {
                 name: document.getElementById('drillNameInput').value || 'Drill',
-                config: { colors: Array.from(selections.colors), arrows: Array.from(selections.arrows), numbers: Array.from(selections.numbers), letters: Array.from(selections.letters) },
+                config: { colors: Array.from(selections.colors), arrows: Array.from(selections.arrows), shapes: Array.from(selections.shapes), numbers: Array.from(selections.numbers), letters: Array.from(selections.letters) },
                 settings: {
                     transMode: transitionMode, durMode: durMode,
                     lenMin: parseFloat(document.getElementById('lenMin').value), lenMax: parseFloat(document.getElementById('lenMax').value), isLenRand: document.getElementById('randLengthToggle').checked,
@@ -470,7 +488,6 @@
             });
         }
         
-        // Promessa que resolve quando o utilizador toca no ecrã (Para o modo Touch)
         function waitForTouch(element, signal) {
             return new Promise((resolve, reject) => {
                 const handler = () => { element.removeEventListener('pointerdown', handler); resolve(); };
@@ -547,6 +564,7 @@
             const arrColors = Array.from(selections.colors);
             const types = [];
             if (selections.arrows.size) types.push('arrows');
+            if (selections.shapes.size) types.push('shapes');
             if (selections.numbers.size) types.push('numbers');
             if (selections.letters.size) types.push('letters');
 
@@ -562,14 +580,15 @@
             if (pContent) {
                 container.innerHTML = pType === 'arrows' 
                     ? `<i class="ph-bold ${pContent} stimulus-pop" style="color: ${fgColor};"></i>` 
-                    : `<span class="stimulus-pop" style="color: ${fgColor};">${pContent}</span>`;
+                    : pType === 'shapes'
+                        ? `<svg viewBox="0 0 100 100" class="w-48 h-48 md:w-64 md:h-64 stimulus-pop" fill="${fgColor}">${data.shapes[pContent]}</svg>`
+                        : `<span class="stimulus-pop" style="color: ${fgColor};">${pContent}</span>`;
             }
 
             playBeep();
 
-            // Modo TIMED vs Modo TOUCH
             if (cfg.transMode === 'touch') {
-                await waitForTouch(container, signal); // Espera que o atleta clique no estímulo
+                await waitForTouch(container, signal); 
             } else {
                 let len = cfg.isLenRand ? (Math.random() * (cfg.lenMax - cfg.lenMin) + cfg.lenMin) : cfg.lenMin;
                 await sleep(len * 1000, signal);
